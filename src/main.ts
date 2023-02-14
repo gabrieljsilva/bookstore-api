@@ -1,8 +1,9 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { PrismaService } from '@prisma/module/prisma.service';
 import { ValidationPipe } from '@nestjs/common';
 import { InvalidEntriesException } from '@exceptions';
+import { JwtGuard } from './packages/user/auth/jwt.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +13,8 @@ async function bootstrap() {
       stopAtFirstError: true,
     }),
   );
+
+  app.useGlobalGuards(new JwtGuard(new Reflector()));
 
   const prismaService = app.get(PrismaService);
   await prismaService.enableShutdownHooks(app);

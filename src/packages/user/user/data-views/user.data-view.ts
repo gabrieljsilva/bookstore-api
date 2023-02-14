@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 
-type User = Prisma.UserGetPayload<{
+type DatabaseUser = Prisma.UserGetPayload<{
   select: { [K in keyof Required<Prisma.UserSelect>]: true };
 }>;
 
@@ -15,7 +15,7 @@ export class UserDataView {
     this.email = user.email;
   }
 
-  static fromDatabase(user: User): UserDataView {
+  static fromDatabaseUser(user: DatabaseUser): UserDataView {
     const { id, name, credentials } = user;
     const { email } = credentials;
     return new UserDataView({ id, name, email });
