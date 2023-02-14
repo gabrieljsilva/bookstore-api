@@ -1,5 +1,4 @@
 #!/bin/bash
-
 mongo <<EOF
 var config = {
     "_id": "dbrs",

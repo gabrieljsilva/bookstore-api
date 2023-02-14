@@ -21,7 +21,8 @@
     "sync": "cd src/infra/database/prisma/models && cat ../config/auto-generated-file-placeholder.txt ../config/config.prisma *.prisma > ../schema.prisma",
     "postsync": "npx prisma generate",
     "sync:dev": "docker compose exec bookstore_api_v1 /bin/bash -c 'npm run sync'",
-    "seed:dev": "docker compose exec bookstore_api_v1 /bin/bash -c 'npm run seed'"
+    "seed:dev": "docker compose exec bookstore_api_v1 /bin/bash -c 'npm run seed'",
+    "init:env": "./scripts/init-enviroment.sh"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
