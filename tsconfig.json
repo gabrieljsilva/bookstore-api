@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": false,
+    "paths": {
+      "@constants": ["src/constants"],
+      "@decorators": ["src/decorators"],
+      "@enums": ["src/enums"],
+      "@exception-filters": ["src/exception-filters"],
+      "@exceptions": ["src/exceptions"],
+      "@guards": ["src/guards"],
+      "@middlewares": ["src/middlewares"],
+      "@types": ["src/types"],
+      "@utils": ["src/utils"],
+      "@models": ["src/domain/models"],
+      "@dtos": ["src/domain/dtos"],
+      "@interfaces": ["src/domain/interfaces"],
+      "@prisma/*": ["src/infra/database/prisma/*"],
+      "@testing": ["src/utils/testing"]
+    }
+  }
+}

@@ -1,0 +1,53 @@
+version: "3.7"
+
+services:
+  bookstore_mongo:
+    container_name: bookstore_mongo
+    image: mongo:4.4
+    volumes:
+      - ./scripts/rs-init.sh:/scripts/rs-init.sh
+    networks:
+      - default
+    ports:
+      - '27017:27017'
+    restart: always
+    links:
+      - bookstore_mongo_replica
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGODB_NAME}
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "dbrs" ]
+    depends_on:
+      - bookstore_mongo_replica
+
+  bookstore_mongo_replica:
+    image: mongo:4.4
+    container_name: bookstore_mongo_replica
+    restart: always
+    ports:
+      - '27018:27017'
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGODB_NAME}
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "dbrs" ]
+    networks:
+      - default
+
+  bookstore_api_v1:
+    container_name: bookstore_api_v1
+    image: 'node:18.14.0'
+    ports:
+      - '3000:3000'
+    working_dir: '/source'
+    volumes:
+      - .:/source
+    env_file:
+      - ./.env
+    command: "sh -c 'yarn && yarn start:dev'"
+    networks:
+      - default
+    depends_on:
+      - bookstore_mongo
+    environment:
+      DATABASE_URL: 'mongodb://${MONGODB_HOST}/${MONGODB_NAME}'
+
+networks:
+  default:

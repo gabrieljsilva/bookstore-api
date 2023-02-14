@@ -1,0 +1,138 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Credentials {
+  email: String!
+}
+
+type User {
+  id: String!
+  name: String!
+  credentials: Credentials!
+}
+
+type Upload {
+  id: String!
+  originalName: String!
+  mimeType: String!
+  key: String!
+}
+
+type PaginationMetadata {
+  currentPage: Float!
+  totalPages: Float!
+  totalItemsCount: Float!
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  nextPage: Float
+  previousPage: Float
+}
+
+type UserPaginated {
+  items: [User!]!
+  meta: PaginationMetadata!
+}
+
+type UploadPaginated {
+  items: [Upload!]!
+  meta: PaginationMetadata!
+}
+
+input CredentialsFilter {
+  equals: CredentialsFilterableEntity
+  like: CredentialsFilterableEntity
+  not: CredentialsFilterableEntity
+  and: CredentialsFilter
+  or: CredentialsFilter
+}
+
+input CredentialsFilterableEntity {
+  id: String
+  email: String
+}
+
+input UserFilter {
+  equals: UserFilterableEntity
+  like: UserFilterableEntity
+  not: UserFilterableEntity
+  and: UserFilter
+  or: UserFilter
+}
+
+input UserFilterableEntity {
+  id: String
+  name: String
+  credentials: CredentialsFilterableEntity
+}
+
+input UploadFilter {
+  equals: UploadFilterableEntity
+  like: UploadFilterableEntity
+  not: UploadFilterableEntity
+  and: UploadFilter
+  or: UploadFilter
+}
+
+input UploadFilterableEntity {
+  id: String
+  originalName: String
+  mimeType: String
+  key: String
+}
+
+type Query {
+  getManyUsers(pagination: PaginationInput!, filters: UserFilters): UserPaginated!
+  getUserById(id: String!): User!
+  getUploads(filters: UploadFilters!, pagination: PaginationInput!): UploadPaginated!
+}
+
+input PaginationInput {
+  take: Float!
+  skip: Float!
+}
+
+input UserFilters {
+  equals: UserFilterableEntity
+  like: UserFilterableEntity
+  not: UserFilterableEntity
+  and: UserFilter
+  or: UserFilter
+}
+
+input UploadFilters {
+  equals: UploadFilterableEntity
+  like: UploadFilterableEntity
+  not: UploadFilterableEntity
+  and: UploadFilter
+  or: UploadFilter
+}
+
+type Mutation {
+  createUser(createUserDto: CreateUserDto!): User!
+  updateUserById(updateUserById: UpdateUserDto!): User!
+  deleteUserById(id: String!): Boolean!
+  login(loginInput: LoginDto!): String!
+  activateAccount(activateAccountInput: ActivateAccountDto!): Credentials!
+}
+
+input CreateUserDto {
+  name: String!
+  email: String!
+  password: String!
+}
+
+input UpdateUserDto {
+  id: String!
+  name: String
+}
+
+input LoginDto {
+  email: String!
+  password: String!
+}
+
+input ActivateAccountDto {
+  email: String!
+  token: String!
+}
