@@ -1,1 +1,1 @@
-export * from './create-book.data-view';
+export * from './book-data.view';

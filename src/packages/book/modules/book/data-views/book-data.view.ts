@@ -1,7 +1,7 @@
 import { User, Book, Credentials } from '@prisma/client';
 import { UserDataView } from '../../../../user/modules/user/data-views';
 
-export class CreateBookDataView {
+export class BookDataView {
   id: string;
   title: string;
   description: string;
@@ -11,7 +11,7 @@ export class CreateBookDataView {
   registeredByUser: UserDataView;
   deletedByUser: UserDataView;
 
-  constructor(bookDataView: CreateBookDataView) {
+  constructor(bookDataView: BookDataView) {
     this.id = bookDataView.id;
     this.title = bookDataView.title;
     this.description = bookDataView.description;
@@ -32,7 +32,7 @@ export class CreateBookDataView {
       };
     },
   ) {
-    return new CreateBookDataView({
+    return new BookDataView({
       id: book.id,
       title: book.title,
       description: book.description,
