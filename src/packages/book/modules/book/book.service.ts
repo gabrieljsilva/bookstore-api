@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@prisma/module';
-import {
-  CreateBookDto,
-  DeleteBookDto,
-  GetBookByIdDto,
-  UpdateBookDto,
-} from './dto';
+import { CreateBookDto, BookIdDto, GetBookByIdDto, UpdateBookDto } from './dto';
 import { Prisma, User } from '@prisma/client';
 import { AlreadyExistsException, NotFoundException } from '@exceptions';
 import { ListBooksDto } from './dto/list-books.dto';
@@ -62,10 +57,12 @@ export class BookService {
 
   async getBookById(getBookByIdDto: GetBookByIdDto) {
     const { bookId } = getBookByIdDto;
-    const book = await this.prisma.book.findUnique({
-      where: { id: bookId },
+    const book = await this.prisma.book.findFirst({
+      where: {
+        id: bookId,
+        deletedAt: { isSet: false },
+      },
       include: {
-        deletedByUser: { include: { credentials: true } },
         registeredByUser: { include: { credentials: true } },
       },
     });
@@ -92,7 +89,7 @@ export class BookService {
         title,
         description,
         isbnCode,
-        publishedAt: new Date(publishedAt),
+        publishedAt: publishedAt,
         registeredByUser: {
           connect: { id: user.id },
         },
@@ -105,11 +102,11 @@ export class BookService {
     });
   }
 
-  async deleteBook(deleteBookDto: DeleteBookDto, user: User) {
-    const { bookId } = deleteBookDto;
+  async deleteBook(bookIdDto: BookIdDto, user: User) {
+    const { bookId } = bookIdDto;
     const book = await this.prisma.book.findFirst({
       where: {
-        id: deleteBookDto.bookId,
+        id: bookIdDto.bookId,
         deletedAt: { isSet: false },
       },
     });
@@ -122,11 +119,7 @@ export class BookService {
       where: { id: bookId },
       data: {
         deletedAt: new Date(),
-        deletedByUser: {
-          connect: {
-            id: user.id,
-          },
-        },
+        deletedByUser: { connect: { id: user.id } },
       },
       include: {
         deletedByUser: { include: { credentials: true } },
@@ -135,7 +128,8 @@ export class BookService {
     });
   }
 
-  async updateBook(bookId: string, updateBookDto: UpdateBookDto) {
+  async updateBook(bookIdDto: BookIdDto, updateBookDto: UpdateBookDto) {
+    const { bookId } = bookIdDto;
     const book = await this.prisma.book.findUnique({
       where: { id: bookId },
     });
@@ -146,12 +140,7 @@ export class BookService {
 
     return this.prisma.book.update({
       where: { id: bookId },
-      data: {
-        ...updateBookDto,
-        publishedAt: updateBookDto.publishedAt
-          ? new Date(updateBookDto.publishedAt)
-          : undefined,
-      },
+      data: updateBookDto,
     });
   }
 }

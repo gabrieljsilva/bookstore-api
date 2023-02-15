@@ -10,12 +10,7 @@ import {
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { BookService } from './book.service';
-import {
-  CreateBookDto,
-  DeleteBookDto,
-  GetBookByIdDto,
-  UpdateBookDto,
-} from './dto';
+import { CreateBookDto, BookIdDto, GetBookByIdDto, UpdateBookDto } from './dto';
 import { BookDataView } from './data-views';
 import { CurrentUser } from '@decorators';
 import { ListBooksDto } from './dto/list-books.dto';
@@ -50,20 +45,17 @@ export class BookController {
   }
 
   @Delete(':bookId')
-  async deleteBook(
-    @Param() deleteBookDto: DeleteBookDto,
-    @CurrentUser() user: User,
-  ) {
-    const book = await this.bookService.deleteBook(deleteBookDto, user);
+  async deleteBook(@Param() bookIdDto: BookIdDto, @CurrentUser() user: User) {
+    const book = await this.bookService.deleteBook(bookIdDto, user);
     return BookDataView.fromDatabaseModel(book);
   }
 
   @Put(':bookId')
   async updateBook(
     @Body() updateBookDto: UpdateBookDto,
-    @Param('bookId') bookId: string,
+    @Param() bookIdDto: BookIdDto,
   ) {
-    const book = await this.bookService.updateBook(bookId, updateBookDto);
+    const book = await this.bookService.updateBook(bookIdDto, updateBookDto);
     return BookDataView.fromDatabaseModel(book);
   }
 }

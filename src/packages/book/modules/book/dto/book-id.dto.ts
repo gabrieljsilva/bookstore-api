@@ -3,7 +3,7 @@ import { Exclude, Expose } from 'class-transformer';
 import { IsObjectId } from '@utils';
 
 @Exclude()
-export class DeleteBookDto {
+export class BookIdDto {
   @Expose()
   @IsString()
   @IsNotEmpty()

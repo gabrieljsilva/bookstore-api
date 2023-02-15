@@ -1,5 +1,5 @@
-import { Exclude, Expose } from 'class-transformer';
-import { IsDateString, IsISBN, IsNotEmpty, IsString } from 'class-validator';
+import { Exclude, Expose, Type } from 'class-transformer';
+import { IsDate, IsISBN, IsNotEmpty, IsString } from 'class-validator';
 
 @Exclude()
 export class CreateBookDto {
@@ -18,6 +18,7 @@ export class CreateBookDto {
   isbnCode: string;
 
   @Expose()
-  @IsDateString()
-  publishedAt: string;
+  @IsDate()
+  @Type(() => Date)
+  publishedAt: Date;
 }

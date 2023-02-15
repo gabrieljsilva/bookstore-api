@@ -1,7 +1,7 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { CreateBookDto } from './create-book.dto';
 import {
-  IsDateString,
+  IsDate,
   IsISBN,
   IsNotEmpty,
   IsOptional,
@@ -28,7 +28,8 @@ export class UpdateBookDto implements Partial<CreateBookDto> {
   isbnCode?: string;
 
   @Expose()
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
   @IsOptional()
-  publishedAt?: string;
+  publishedAt?: Date;
 }
