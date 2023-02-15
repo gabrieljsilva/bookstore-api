@@ -1,13 +1,19 @@
 model Book {
-  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
-  title              String
-  description        String
-  isbnCode           String   @unique
-  publishedAt        DateTime
-  registeredByUser   User     @relation(fields: [registeredByUserId], references: [id])
-  registeredByUserId String   @db.ObjectId
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  isbnCode    String   @unique
+  publishedAt DateTime
+
+  registeredByUser   User   @relation(name: "created_books", fields: [registeredByUserId], references: [id])
+  registeredByUserId String @db.ObjectId
+
+  deletedByUser   User?   @relation(name: "deleted_books", fields: [deletedByUserId], references: [id])
+  deletedByUserId String? @db.ObjectId
+
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@map("books")
 }

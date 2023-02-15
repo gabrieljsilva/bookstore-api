@@ -1,8 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { BookService } from './book.service';
-import { CreateBookDto } from './dto';
-import { BookDataView } from './data-views';
+import { CreateBookDto, DeleteBookDto } from './dto';
+import { CreateBookDataView } from './data-views';
 import { CurrentUser } from '@decorators';
 
 @Controller('books')
@@ -15,6 +15,15 @@ export class BookController {
     @CurrentUser() user: User,
   ) {
     const book = await this.bookService.createBook(createBookDto, user);
-    return BookDataView.fromDatabaseBook(book);
+    return CreateBookDataView.fromDatabaseBook(book);
+  }
+
+  @Delete(':bookId')
+  async deleteBook(
+    @Param() deleteBookDto: DeleteBookDto,
+    @CurrentUser() user: User,
+  ) {
+    const book = await this.bookService.deleteBook(deleteBookDto, user);
+    return CreateBookDataView.fromDatabaseBook(book);
   }
 }

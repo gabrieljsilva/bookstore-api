@@ -3,7 +3,8 @@ model User {
   name          String
   credentialsId String      @unique @db.ObjectId
   credentials   Credentials @relation(fields: [credentialsId], references: [id])
-  books         Book[]
+  books         Book[]      @relation(name: "created_books")
+  deletedBooks  Book[]      @relation(name: "deleted_books")
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
