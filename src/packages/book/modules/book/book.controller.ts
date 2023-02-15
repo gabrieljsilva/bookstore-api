@@ -5,11 +5,17 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { BookService } from './book.service';
-import { CreateBookDto, DeleteBookDto, GetBookByIdDto } from './dto';
+import {
+  CreateBookDto,
+  DeleteBookDto,
+  GetBookByIdDto,
+  UpdateBookDto,
+} from './dto';
 import { BookDataView } from './data-views';
 import { CurrentUser } from '@decorators';
 import { ListBooksDto } from './dto/list-books.dto';
@@ -49,6 +55,15 @@ export class BookController {
     @CurrentUser() user: User,
   ) {
     const book = await this.bookService.deleteBook(deleteBookDto, user);
+    return BookDataView.fromDatabaseModel(book);
+  }
+
+  @Put(':bookId')
+  async updateBook(
+    @Body() updateBookDto: UpdateBookDto,
+    @Param('bookId') bookId: string,
+  ) {
+    const book = await this.bookService.updateBook(bookId, updateBookDto);
     return BookDataView.fromDatabaseModel(book);
   }
 }

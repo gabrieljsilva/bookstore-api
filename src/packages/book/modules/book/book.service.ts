@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@prisma/module';
-import { CreateBookDto, DeleteBookDto, GetBookByIdDto } from './dto';
+import {
+  CreateBookDto,
+  DeleteBookDto,
+  GetBookByIdDto,
+  UpdateBookDto,
+} from './dto';
 import { Prisma, User } from '@prisma/client';
 import { AlreadyExistsException, NotFoundException } from '@exceptions';
 import { ListBooksDto } from './dto/list-books.dto';
@@ -16,13 +21,9 @@ export class BookService {
   async listBooks(listBooksDto: ListBooksDto) {
     const { offset, limit, searchText, status } = listBooksDto;
 
-    const statusQuery: DateTimeNullableFilter = {};
-
-    if (status === 'active') {
-      statusQuery['isSet'] = false;
-    }
-    if (status === 'deleted') {
-      statusQuery['isSet'] = true;
+    const filterByStatusQuery: DateTimeNullableFilter = {};
+    if (status && status !== 'all') {
+      filterByStatusQuery['isSet'] = status === 'deleted';
     }
 
     const searchTextQuery: StringFilter = {
@@ -30,8 +31,8 @@ export class BookService {
       mode: 'insensitive',
     };
 
-    const listBooksFilter: BookWhereInput = {
-      deletedAt: statusQuery,
+    const listBooksQuery: BookWhereInput = {
+      deletedAt: filterByStatusQuery,
       OR: [
         { title: searchTextQuery },
         { description: searchTextQuery },
@@ -40,27 +41,18 @@ export class BookService {
       ],
     };
 
-    const booksCount = await this.prisma.book.count({
-      where: listBooksFilter,
-    });
-
-    const books = await this.prisma.book.findMany({
-      where: listBooksFilter,
-      take: limit,
-      skip: offset,
-      include: {
-        registeredByUser: {
-          include: {
-            credentials: true,
-          },
+    const [booksCount, books] = await Promise.all([
+      this.prisma.book.count({ where: listBooksQuery }),
+      this.prisma.book.findMany({
+        where: listBooksQuery,
+        take: limit,
+        skip: offset,
+        include: {
+          registeredByUser: { include: { credentials: true } },
+          deletedByUser: { include: { credentials: true } },
         },
-        deletedByUser: {
-          include: {
-            credentials: true,
-          },
-        },
-      },
-    });
+      }),
+    ]);
 
     return {
       books,
@@ -139,6 +131,26 @@ export class BookService {
       include: {
         deletedByUser: { include: { credentials: true } },
         registeredByUser: { include: { credentials: true } },
+      },
+    });
+  }
+
+  async updateBook(bookId: string, updateBookDto: UpdateBookDto) {
+    const book = await this.prisma.book.findUnique({
+      where: { id: bookId },
+    });
+
+    if (!book) {
+      throw new NotFoundException('book', { id: bookId });
+    }
+
+    return this.prisma.book.update({
+      where: { id: bookId },
+      data: {
+        ...updateBookDto,
+        publishedAt: updateBookDto.publishedAt
+          ? new Date(updateBookDto.publishedAt)
+          : undefined,
       },
     });
   }
