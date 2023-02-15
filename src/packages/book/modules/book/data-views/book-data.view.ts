@@ -22,14 +22,10 @@ export class BookDataView {
     this.deletedByUser = bookDataView.deletedByUser;
   }
 
-  static fromDatabaseBook(
+  static fromDatabaseModel(
     book: Book & {
-      deletedByUser?: User & {
-        credentials: Credentials;
-      };
-      registeredByUser?: User & {
-        credentials: Credentials;
-      };
+      deletedByUser?: User & { credentials: Credentials };
+      registeredByUser?: User & { credentials: Credentials };
     },
   ) {
     return new BookDataView({
@@ -41,9 +37,10 @@ export class BookDataView {
       deletedAt: book.deletedAt || undefined,
       registeredByUser:
         book?.registeredByUser &&
-        UserDataView.fromUserEntity(book.registeredByUser),
+        UserDataView.fromDatabaseModel(book.registeredByUser),
       deletedByUser:
-        book.deletedByUser && UserDataView.fromUserEntity(book.deletedByUser),
+        book.deletedByUser &&
+        UserDataView.fromDatabaseModel(book.deletedByUser),
     });
   }
 }

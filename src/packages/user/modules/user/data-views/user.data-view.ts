@@ -11,7 +11,7 @@ export class UserDataView {
     this.email = user.email;
   }
 
-  static fromUserEntity(
+  static fromDatabaseModel(
     user: User & { credentials: Credentials },
   ): UserDataView {
     const { id, name, credentials } = user;

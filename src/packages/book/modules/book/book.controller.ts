@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { BookService } from './book.service';
-import { CreateBookDto, DeleteBookDto } from './dto';
+import { CreateBookDto, DeleteBookDto, GetBookByIdDto } from './dto';
 import { BookDataView } from './data-views';
 import { CurrentUser } from '@decorators';
 import { ListBooksDto } from './dto/list-books.dto';
@@ -23,9 +23,15 @@ export class BookController {
   async listBooks(@Query() listBooksDto: ListBooksDto) {
     const { books, count } = await this.bookService.listBooks(listBooksDto);
     return new PaginatedData({
-      items: books.map(BookDataView.fromDatabaseBook),
+      items: books.map(BookDataView.fromDatabaseModel),
       count,
     });
+  }
+
+  @Get(':bookId')
+  async getBookById(@Param() getBookByIdDto: GetBookByIdDto) {
+    const book = await this.bookService.getBookById(getBookByIdDto);
+    return BookDataView.fromDatabaseModel(book);
   }
 
   @Post()
@@ -34,7 +40,7 @@ export class BookController {
     @CurrentUser() user: User,
   ) {
     const book = await this.bookService.createBook(createBookDto, user);
-    return BookDataView.fromDatabaseBook(book);
+    return BookDataView.fromDatabaseModel(book);
   }
 
   @Delete(':bookId')
@@ -43,6 +49,6 @@ export class BookController {
     @CurrentUser() user: User,
   ) {
     const book = await this.bookService.deleteBook(deleteBookDto, user);
-    return BookDataView.fromDatabaseBook(book);
+    return BookDataView.fromDatabaseModel(book);
   }
 }

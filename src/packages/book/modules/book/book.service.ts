@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@prisma/module';
-import { CreateBookDto, DeleteBookDto } from './dto';
+import { CreateBookDto, DeleteBookDto, GetBookByIdDto } from './dto';
 import { Prisma, User } from '@prisma/client';
 import { AlreadyExistsException, NotFoundException } from '@exceptions';
 import { ListBooksDto } from './dto/list-books.dto';
+
 import BookWhereInput = Prisma.BookWhereInput;
 import DateTimeNullableFilter = Prisma.DateTimeNullableFilter;
 import StringFilter = Prisma.StringFilter;
@@ -67,6 +68,23 @@ export class BookService {
     };
   }
 
+  async getBookById(getBookByIdDto: GetBookByIdDto) {
+    const { bookId } = getBookByIdDto;
+    const book = await this.prisma.book.findUnique({
+      where: { id: bookId },
+      include: {
+        deletedByUser: { include: { credentials: true } },
+        registeredByUser: { include: { credentials: true } },
+      },
+    });
+
+    if (!book) {
+      throw new NotFoundException('book', { id: bookId });
+    }
+
+    return book;
+  }
+
   async createBook(createBookDto: CreateBookDto, user: User) {
     const { title, description, isbnCode, publishedAt } = createBookDto;
     const bookAlreadyRegistered = await this.prisma.book.findUnique({
@@ -84,16 +102,12 @@ export class BookService {
         isbnCode,
         publishedAt: new Date(publishedAt),
         registeredByUser: {
-          connect: {
-            id: user.id,
-          },
+          connect: { id: user.id },
         },
       },
       include: {
         registeredByUser: {
-          include: {
-            credentials: true,
-          },
+          include: { credentials: true },
         },
       },
     });
@@ -104,9 +118,7 @@ export class BookService {
     const book = await this.prisma.book.findFirst({
       where: {
         id: deleteBookDto.bookId,
-        deletedAt: {
-          isSet: false,
-        },
+        deletedAt: { isSet: false },
       },
     });
 
@@ -125,16 +137,8 @@ export class BookService {
         },
       },
       include: {
-        deletedByUser: {
-          include: {
-            credentials: true,
-          },
-        },
-        registeredByUser: {
-          include: {
-            credentials: true,
-          },
-        },
+        deletedByUser: { include: { credentials: true } },
+        registeredByUser: { include: { credentials: true } },
       },
     });
   }
