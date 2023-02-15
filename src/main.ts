@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { PrismaService } from '@prisma/module/prisma.service';
 import { ValidationPipe } from '@nestjs/common';
 import { InvalidEntriesException } from '@exceptions';
-import { JwtGuard } from './packages/user/auth/jwt.guard';
+import { JwtGuard } from './packages/user/modules/auth/jwt.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

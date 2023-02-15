@@ -12,6 +12,6 @@ export class UserController {
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
     const user = await this.userService.createUser(createUserDto);
-    return UserDataView.fromDatabaseUser(user);
+    return UserDataView.fromUserEntity(user);
   }
 }

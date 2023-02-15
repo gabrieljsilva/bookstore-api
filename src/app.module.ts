@@ -1,7 +1,8 @@
 import { Controller, Get, Module } from '@nestjs/common';
 import { PrismaModule } from '@prisma/module/prisma.module';
-import { UserModule } from './packages/user/user/user.module';
-import { AuthModule } from './packages/user/auth/auth.module';
+import { UserModule } from './packages/user/modules/user/user.module';
+import { AuthModule } from './packages/user/modules/auth/auth.module';
+import { BookModule } from './packages/book/modules/book/book.module';
 
 @Controller('')
 class Hello {
@@ -12,7 +13,7 @@ class Hello {
 }
 
 @Module({
-  imports: [PrismaModule, UserModule, AuthModule],
+  imports: [PrismaModule, UserModule, AuthModule, BookModule],
   controllers: [Hello],
   providers: [],
 })

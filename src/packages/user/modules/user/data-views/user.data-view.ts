@@ -1,8 +1,4 @@
-import { Prisma } from '@prisma/client';
-
-type DatabaseUser = Prisma.UserGetPayload<{
-  select: { [K in keyof Required<Prisma.UserSelect>]: true };
-}>;
+import { User, Credentials } from '@prisma/client';
 
 export class UserDataView {
   id: string;
@@ -15,7 +11,9 @@ export class UserDataView {
     this.email = user.email;
   }
 
-  static fromDatabaseUser(user: DatabaseUser): UserDataView {
+  static fromUserEntity(
+    user: User & { credentials: Credentials },
+  ): UserDataView {
     const { id, name, credentials } = user;
     const { email } = credentials;
     return new UserDataView({ id, name, email });

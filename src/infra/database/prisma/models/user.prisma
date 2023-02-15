@@ -3,6 +3,9 @@ model User {
   name          String
   credentialsId String      @unique @db.ObjectId
   credentials   Credentials @relation(fields: [credentialsId], references: [id])
+  books         Book[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   @@map("users")
 }
