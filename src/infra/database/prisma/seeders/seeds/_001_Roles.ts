@@ -1,13 +1,13 @@
 import { Seeder } from '../utils';
 
-export class _001_Roles extends Seeder<string> {
+export class _001_Roles extends Seeder<string[]> {
   async seed() {
-    await this.prisma.role.create({
-      data: { name: this.data },
+    await this.prisma.role.createMany({
+      data: this.data.map((role) => ({ name: role })),
     });
   }
 
-  get data() {
-    return 'USER';
+  get data(): string[] {
+    return ['ADMIN', 'CUSTOMER'];
   }
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@prisma/module';
-import { CreateUserDto } from './dtos';
-import { AlreadyExistsException } from '@exceptions';
 import { Hashing } from '@utils';
+import { AlreadyExistsException } from '@exceptions';
+import { CreateUserDto } from './dtos';
 
 @Injectable()
 export class UserService {
@@ -26,13 +26,12 @@ export class UserService {
     return this.prisma.user.create({
       data: {
         name,
-
         credentials: {
           create: {
             email,
             password: await Hashing.hash(password),
             roles: {
-              connect: { name: 'USER' },
+              connect: { name: 'CUSTOMER' },
             },
           },
         },

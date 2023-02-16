@@ -23,7 +23,7 @@ export class _002_Permissions extends Seeder<PermissionSeeder> {
 
   get data(): PermissionSeeder {
     return {
-      roleName: 'USER',
+      roleName: 'ADMIN',
       permissions: [
         'CREATE_BOOK',
         'READ_BOOKS',

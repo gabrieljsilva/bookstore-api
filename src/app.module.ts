@@ -3,6 +3,7 @@ import { PrismaModule } from '@prisma/module/prisma.module';
 import { UserModule } from './packages/user/modules/user/user.module';
 import { AuthModule } from './packages/user/modules/auth/auth.module';
 import { BookModule } from './packages/book/modules/book/book.module';
+import { RentModule } from './packages/rent/modules/rent/rent.module';
 
 @Controller('')
 class Hello {
@@ -13,7 +14,7 @@ class Hello {
 }
 
 @Module({
-  imports: [PrismaModule, UserModule, AuthModule, BookModule],
+  imports: [PrismaModule, UserModule, AuthModule, BookModule, RentModule],
   controllers: [Hello],
   providers: [],
 })

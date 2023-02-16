@@ -14,7 +14,7 @@ import { BookDataView } from './data-views';
 import { CurrentAccessCredentials, RequirePermissions } from '@decorators';
 import { ListBooksDto } from './dto/list-books.dto';
 import { PaginatedData } from '@models';
-import { DatabaseCredentials } from '../../../../typings/prisma';
+import { CredentialsModel } from '@models';
 
 @Controller('books')
 export class BookController {
@@ -41,7 +41,7 @@ export class BookController {
   @RequirePermissions('CREATE_BOOK')
   async createBook(
     @Body() createBookDto: CreateBookDto,
-    @CurrentAccessCredentials() credentials: DatabaseCredentials,
+    @CurrentAccessCredentials() credentials: CredentialsModel,
   ) {
     const book = await this.bookService.createBook(
       createBookDto,
@@ -54,7 +54,7 @@ export class BookController {
   @RequirePermissions('DELETE_BOOK')
   async deleteBook(
     @Param() bookIdDto: BookIdDto,
-    @CurrentAccessCredentials() credentials: DatabaseCredentials,
+    @CurrentAccessCredentials() credentials: CredentialsModel,
   ) {
     const book = await this.bookService.deleteBook(bookIdDto, credentials.user);
     return BookDataView.fromDatabaseModel(book);

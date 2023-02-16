@@ -4,9 +4,12 @@ model User {
   credentialsId String      @unique @db.ObjectId
   credentials   Credentials @relation(fields: [credentialsId], references: [id])
   books         Book[]      @relation(name: "created_books")
-  deletedBooks  Book[]      @relation(name: "deleted_books")
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+
+  deletedBooks Book[] @relation(name: "deleted_books")
+  rentedBooks  Rent[] @relation(name: "rented_books")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("users")
 }

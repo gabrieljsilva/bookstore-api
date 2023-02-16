@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import CredentialsArgs = Prisma.CredentialsArgs;
 
-const databaseCredentials = Prisma.validator<CredentialsArgs>()({
+const credentialsModel = Prisma.validator<CredentialsArgs>()({
   include: {
     user: true,
     roles: {
@@ -12,6 +12,6 @@ const databaseCredentials = Prisma.validator<CredentialsArgs>()({
   },
 });
 
-export type DatabaseCredentials = Prisma.CredentialsGetPayload<
-  typeof databaseCredentials
+export type CredentialsModel = Prisma.CredentialsGetPayload<
+  typeof credentialsModel
 >;
