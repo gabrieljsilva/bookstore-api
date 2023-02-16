@@ -36,9 +36,41 @@ model Credentials {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User?
+  user     User?
+  roles    Role[]   @relation(fields: [rolesIds], references: [id])
+  rolesIds String[] @db.ObjectId
 
   @@map("credentials")
+}
+model Seed {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  @@map("__executed_seeds")
+}
+model Permission {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role   Role?  @relation(fields: [roleId], references: [id])
+  roleId String @db.ObjectId
+
+  @@map("permissions")
+}
+model Role {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  permissions    Permission[]
+  credentials    Credentials[] @relation(fields: [credentialsIds], references: [id])
+  credentialsIds String[]      @db.ObjectId
+
+  @@map("roles")
 }
 model User {
   id            String      @id @default(auto()) @map("_id") @db.ObjectId

@@ -26,10 +26,14 @@ export class UserService {
     return this.prisma.user.create({
       data: {
         name,
+
         credentials: {
           create: {
             email,
             password: await Hashing.hash(password),
+            roles: {
+              connect: { name: 'USER' },
+            },
           },
         },
       },

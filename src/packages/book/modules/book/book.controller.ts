@@ -8,19 +8,20 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
 import { BookService } from './book.service';
 import { CreateBookDto, BookIdDto, GetBookByIdDto, UpdateBookDto } from './dto';
 import { BookDataView } from './data-views';
-import { CurrentUser } from '@decorators';
+import { CurrentAccessCredentials, RequirePermissions } from '@decorators';
 import { ListBooksDto } from './dto/list-books.dto';
 import { PaginatedData } from '@models';
+import { DatabaseCredentials } from '../../../../typings/prisma';
 
 @Controller('books')
 export class BookController {
   constructor(private readonly bookService: BookService) {}
 
   @Get()
+  @RequirePermissions('READ_BOOKS')
   async listBooks(@Query() listBooksDto: ListBooksDto) {
     const { books, count } = await this.bookService.listBooks(listBooksDto);
     return new PaginatedData({
@@ -30,27 +31,37 @@ export class BookController {
   }
 
   @Get(':bookId')
+  @RequirePermissions('READ_BOOK')
   async getBookById(@Param() getBookByIdDto: GetBookByIdDto) {
     const book = await this.bookService.getBookById(getBookByIdDto);
     return BookDataView.fromDatabaseModel(book);
   }
 
   @Post()
+  @RequirePermissions('CREATE_BOOK')
   async createBook(
     @Body() createBookDto: CreateBookDto,
-    @CurrentUser() user: User,
+    @CurrentAccessCredentials() credentials: DatabaseCredentials,
   ) {
-    const book = await this.bookService.createBook(createBookDto, user);
+    const book = await this.bookService.createBook(
+      createBookDto,
+      credentials.user,
+    );
     return BookDataView.fromDatabaseModel(book);
   }
 
   @Delete(':bookId')
-  async deleteBook(@Param() bookIdDto: BookIdDto, @CurrentUser() user: User) {
-    const book = await this.bookService.deleteBook(bookIdDto, user);
+  @RequirePermissions('DELETE_BOOK')
+  async deleteBook(
+    @Param() bookIdDto: BookIdDto,
+    @CurrentAccessCredentials() credentials: DatabaseCredentials,
+  ) {
+    const book = await this.bookService.deleteBook(bookIdDto, credentials.user);
     return BookDataView.fromDatabaseModel(book);
   }
 
   @Put(':bookId')
+  @RequirePermissions('UPDATE_BOOK')
   async updateBook(
     @Body() updateBookDto: UpdateBookDto,
     @Param() bookIdDto: BookIdDto,

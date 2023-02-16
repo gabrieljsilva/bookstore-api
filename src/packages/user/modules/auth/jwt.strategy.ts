@@ -15,14 +15,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
-    return this.prisma.user.findFirst({
+    return this.prisma.credentials.findFirst({
       where: {
-        credentials: {
-          id: payload.credentialsId,
-        },
+        id: payload.credentialsId,
       },
       include: {
-        credentials: true,
+        user: true,
+        roles: {
+          include: {
+            permissions: true,
+          },
+        },
       },
     });
   }
