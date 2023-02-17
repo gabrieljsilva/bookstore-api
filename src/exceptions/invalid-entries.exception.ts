@@ -7,8 +7,10 @@ export class InvalidEntriesException extends BaseException {
     const entries = {};
 
     for (const error of errors) {
-      const [firstConstraintError] = Object.values(error.constraints);
-      entries[error.property] = firstConstraintError;
+      if (error.constraints) {
+        const [firstConstraintError] = Object.values(error.constraints);
+        entries[error.property] = firstConstraintError;
+      }
     }
 
     super(

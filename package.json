@@ -38,6 +38,8 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "date-fns": "^2.29.3",
+    "fishery": "^2.2.2",
+    "jest-mock-extended": "^3.0.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "prisma": "^4.10.1",
@@ -92,6 +94,7 @@
       "@decorators": "<rootDir>/src/decorators/index.ts",
       "@enums": "<rootDir>/src/enums/index.ts",
       "@models": "<rootDir>/src/domain/models/index.ts",
+      "@utils": "<rootDir>/src/utils/index.ts",
       "@exceptions": "<rootDir>/src/exceptions/index.ts",
       "@testing": "<rootDir>/src/utils/testing/index.ts",
       "@prisma/module": "<rootDir>/src/infra/database/prisma/module/index.ts"

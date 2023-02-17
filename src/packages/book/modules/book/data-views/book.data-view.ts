@@ -24,7 +24,7 @@ export class BookDataView {
   publishedAt: Date;
 
   @ApiProperty()
-  deletedAt: Date;
+  deletedAt?: Date;
 
   @ApiProperty({ nullable: true })
   registeredByUser?: UserDataView;
@@ -51,7 +51,7 @@ export class BookDataView {
       description: book.description,
       isbnCode: book.isbnCode,
       publishedAt: book.publishedAt,
-      deletedAt: book.deletedAt || undefined,
+      deletedAt: book.deletedAt ?? undefined,
       registeredByUser:
         registeredByUser && UserDataView.fromDatabaseModel(registeredByUser),
       deletedByUser:

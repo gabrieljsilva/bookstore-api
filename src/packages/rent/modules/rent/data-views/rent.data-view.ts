@@ -48,7 +48,7 @@ export class RentDataView {
     return new RentDataView({
       id: rent.id,
       returnDate: rent.returnDate,
-      returnedIn: returnedIn && returnedIn,
+      returnedIn: returnedIn ?? undefined,
       user: user && UserDataView.fromDatabaseModel(user),
       book: book && BookDataView.fromDatabaseModel(book),
       createdAt: rent.createdAt,
