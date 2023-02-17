@@ -9,10 +9,10 @@ import { addDays, endOfDay } from 'date-fns';
 import { CreateRentDto, ReturnBookDto } from './dto';
 import { BookRentedOrDeleted, NotFoundException } from '@exceptions';
 
-let rentService: RentService;
-let prisma: DeepMockProxy<PrismaService>;
-
 describe('Rent rests', () => {
+  let rentService: RentService;
+  let prisma: DeepMockProxy<PrismaService>;
+
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [RentService, BookService, PrismaService],
