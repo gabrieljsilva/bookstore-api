@@ -4,6 +4,7 @@ import {
   _001_Roles,
   _002_Permissions,
   _003_CustomerPermissions,
+  _004_User,
 } from './seeds';
 
 const prisma = new PrismaClient();
@@ -14,6 +15,7 @@ async function main() {
     _001_Roles,
     _002_Permissions,
     _003_CustomerPermissions,
+    _004_User,
   );
 }
 

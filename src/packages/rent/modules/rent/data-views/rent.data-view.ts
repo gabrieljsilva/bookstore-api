@@ -2,12 +2,19 @@ import { Book, Credentials, Rent, User } from '@prisma/client';
 import { UserDataView } from '../../../../user/modules/user/data-views';
 import { BookDataView } from '../../../../book/modules/book/data-views';
 
+type RentDatabaseModel = Rent & {
+  user?: User & {
+    credentials: Credentials;
+  };
+  book?: Book;
+};
+
 export class RentDataView {
   id: string;
   returnDate: Date;
   returnedIn?: Date;
   user?: UserDataView;
-  book: BookDataView;
+  book?: BookDataView;
   createdAt: Date;
   updatedAt: Date;
 
@@ -21,9 +28,7 @@ export class RentDataView {
     this.updatedAt = rentDataView.updatedAt;
   }
 
-  static fromDatabaseModel(
-    rent: Rent & { user?: User & { credentials: Credentials }; book: Book },
-  ) {
+  static fromDatabaseModel(rent: RentDatabaseModel) {
     const { user, book, returnedIn } = rent;
 
     return new RentDataView({
@@ -31,7 +36,7 @@ export class RentDataView {
       returnDate: rent.returnDate,
       returnedIn: returnedIn && returnedIn,
       user: user && UserDataView.fromDatabaseModel(user),
-      book: BookDataView.fromDatabaseModel(book),
+      book: book && BookDataView.fromDatabaseModel(book),
       createdAt: rent.createdAt,
       updatedAt: rent.updatedAt,
     });

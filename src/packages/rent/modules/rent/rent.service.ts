@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@prisma/module';
-import { CreateRentDto, ListRentsDto } from './dto';
+import { CreateRentDto, ListRentsDto, ReturnBookDto } from './dto';
 import { Prisma, User } from '@prisma/client';
-import { AlreadyExistsException } from '@exceptions';
+import { AlreadyExistsException, NotFoundException } from '@exceptions';
 import { addDays, endOfDay } from 'date-fns';
 import RentWhereInput = Prisma.RentWhereInput;
 
@@ -60,5 +60,28 @@ export class RentService {
       rents,
       rentsCount,
     };
+  }
+
+  async returnBook(returnBookDto: ReturnBookDto) {
+    const { rentId } = returnBookDto;
+    const rent = await this.prisma.rent.findFirst({
+      where: {
+        id: rentId,
+        returnedIn: {
+          isSet: false,
+        },
+      },
+    });
+
+    if (!rent) {
+      throw new NotFoundException('rent', { id: rentId });
+    }
+
+    return this.prisma.rent.update({
+      where: { id: rentId },
+      data: {
+        returnedIn: new Date(),
+      },
+    });
   }
 }

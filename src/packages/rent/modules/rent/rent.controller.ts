@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { CredentialsModel, PaginatedData } from '@models';
 import { CurrentAccessCredentials, RequirePermissions } from '@decorators';
 import { RentService } from './rent.service';
-import { CreateRentDto, ListRentsDto } from './dto';
+import { CreateRentDto, ListRentsDto, ReturnBookDto } from './dto';
 import { RentDataView } from './data-views';
 
 @Controller('rents')
@@ -23,6 +23,7 @@ export class RentController {
   }
 
   @Get()
+  @RequirePermissions('READ_RENTS')
   async listRents(@Query() listRentsDto: ListRentsDto) {
     const { rents, rentsCount } = await this.rentService.listRents(
       listRentsDto,
@@ -32,5 +33,12 @@ export class RentController {
       items: rents.map(RentDataView.fromDatabaseModel),
       count: rentsCount,
     });
+  }
+
+  @Post(':rentId/return')
+  @RequirePermissions('UPDATE_BOOK')
+  async returnBook(@Param() returnBookDto: ReturnBookDto) {
+    const rent = await this.rentService.returnBook(returnBookDto);
+    return RentDataView.fromDatabaseModel(rent);
   }
 }
