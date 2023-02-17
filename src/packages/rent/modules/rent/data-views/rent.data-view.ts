@@ -1,6 +1,7 @@
 import { Book, Credentials, Rent, User } from '@prisma/client';
 import { UserDataView } from '../../../../user/modules/user/data-views';
 import { BookDataView } from '../../../../book/modules/book/data-views';
+import { ApiProperty } from '@nestjs/swagger';
 
 type RentDatabaseModel = Rent & {
   user?: User & {
@@ -10,12 +11,25 @@ type RentDatabaseModel = Rent & {
 };
 
 export class RentDataView {
+  @ApiProperty()
   id: string;
+
+  @ApiProperty()
   returnDate: Date;
+
+  @ApiProperty()
   returnedIn?: Date;
+
+  @ApiProperty({ nullable: true })
   user?: UserDataView;
+
+  @ApiProperty({ nullable: true })
   book?: BookDataView;
+
+  @ApiProperty()
   createdAt: Date;
+
+  @ApiProperty()
   updatedAt: Date;
 
   constructor(rentDataView: RentDataView) {

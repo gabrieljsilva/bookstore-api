@@ -1,13 +1,21 @@
 import { User, Credentials, Role } from '@prisma/client';
+import { ApiProperty } from '@nestjs/swagger';
 
 type UserDatabaseModel = User & {
   credentials: Credentials & { roles?: Role[] };
 };
 
 export class UserDataView {
+  @ApiProperty()
   id: string;
+
+  @ApiProperty()
   name: string;
+
+  @ApiProperty()
   email: string;
+
+  @ApiProperty()
   roles?: string[];
 
   constructor(user: UserDataView) {
