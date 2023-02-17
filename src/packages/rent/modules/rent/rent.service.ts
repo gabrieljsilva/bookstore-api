@@ -33,9 +33,18 @@ export class RentService {
       throw new NotFoundException('user', { id: customerId });
     }
 
+    const book = await this.prisma.book.findUnique({
+      where: { id: bookId },
+    });
+
+    if (!book) {
+      throw new NotFoundException('book', { bookId });
+    }
+
     const isBookAlreadyRented = await this.bookService.isBookRentedOrDeleted(
       bookId,
     );
+
     if (isBookAlreadyRented) {
       throw new BookRentedOrDeleted(bookId);
     }
@@ -100,9 +109,7 @@ export class RentService {
 
     return this.prisma.rent.update({
       where: { id: rentId },
-      data: {
-        returnedIn: new Date(),
-      },
+      data: { returnedIn: new Date() },
     });
   }
 }
