@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@prisma/module';
 import { CreateBookDto, BookIdDto, GetBookByIdDto, UpdateBookDto } from './dto';
 import { Prisma, User } from '@prisma/client';
-import { AlreadyExistsException, NotFoundException } from '@exceptions';
+import {
+  AlreadyExistsException,
+  BookRentedOrDeleted,
+  NotFoundException,
+} from '@exceptions';
 import { ListBooksDto } from './dto/list-books.dto';
 
 import BookWhereInput = Prisma.BookWhereInput;
@@ -12,6 +16,29 @@ import StringFilter = Prisma.StringFilter;
 @Injectable()
 export class BookService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async isBookRentedOrDeleted(bookId: string) {
+    const book = await this.prisma.book.findFirst({
+      where: {
+        OR: [
+          {
+            id: bookId,
+            rents: {
+              some: {
+                returnedIn: { isSet: false },
+              },
+            },
+          },
+          {
+            id: bookId,
+            deletedAt: { isSet: true },
+          },
+        ],
+      },
+    });
+
+    return !!book;
+  }
 
   async listBooks(listBooksDto: ListBooksDto) {
     const { offset, limit, searchText, status } = listBooksDto;
@@ -42,10 +69,6 @@ export class BookService {
         where: listBooksQuery,
         take: limit,
         skip: offset,
-        include: {
-          registeredByUser: { include: { credentials: true } },
-          deletedByUser: { include: { credentials: true } },
-        },
       }),
     ]);
 
@@ -64,6 +87,7 @@ export class BookService {
       },
       include: {
         registeredByUser: { include: { credentials: true } },
+        deletedByUser: { include: { credentials: true } },
       },
     });
 
@@ -104,15 +128,12 @@ export class BookService {
 
   async deleteBook(bookIdDto: BookIdDto, user: User) {
     const { bookId } = bookIdDto;
-    const book = await this.prisma.book.findFirst({
-      where: {
-        id: bookIdDto.bookId,
-        deletedAt: { isSet: false },
-      },
-    });
+    const isBookAlreadyRentedOrDeleted = await this.isBookRentedOrDeleted(
+      bookId,
+    );
 
-    if (!book) {
-      throw new NotFoundException('book', { id: bookId });
+    if (isBookAlreadyRentedOrDeleted) {
+      throw new BookRentedOrDeleted(bookId);
     }
 
     return this.prisma.book.update({
@@ -136,6 +157,14 @@ export class BookService {
 
     if (!book) {
       throw new NotFoundException('book', { id: bookId });
+    }
+
+    const isBookAlreadyRentedOrDeleted = await this.isBookRentedOrDeleted(
+      bookId,
+    );
+
+    if (isBookAlreadyRentedOrDeleted) {
+      throw new BookRentedOrDeleted(bookId);
     }
 
     return this.prisma.book.update({

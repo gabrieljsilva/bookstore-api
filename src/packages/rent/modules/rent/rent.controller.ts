@@ -10,20 +10,21 @@ export class RentController {
   constructor(private readonly rentService: RentService) {}
 
   @Post()
-  @RequirePermissions('RENT_BOOK')
-  async createRent(
-    @Body() createRentDto: CreateRentDto,
-    @CurrentUser() user: UserModel,
-  ) {
-    const rent = await this.rentService.createRent(createRentDto, user);
+  @RequirePermissions('CREATE_RENT')
+  async createRent(@Body() createRentDto: CreateRentDto) {
+    const rent = await this.rentService.createRent(createRentDto);
     return RentDataView.fromDatabaseModel(rent);
   }
 
   @Get()
   @RequirePermissions('READ_RENTS')
-  async listRents(@Query() listRentsDto: ListRentsDto) {
+  async listRents(
+    @Query() listRentsDto: ListRentsDto,
+    @CurrentUser() user: UserModel,
+  ) {
     const { rents, rentsCount } = await this.rentService.listRents(
       listRentsDto,
+      user,
     );
 
     return new PaginatedData({

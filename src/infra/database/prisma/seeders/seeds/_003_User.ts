@@ -8,7 +8,7 @@ interface User {
   role: string;
 }
 
-export class _004_User extends Seeder<User[]> {
+export class _003_User extends Seeder<User[]> {
   async seed() {
     for (const user of this.data) {
       const { name, email, password, role } = user;
@@ -19,9 +19,7 @@ export class _004_User extends Seeder<User[]> {
             create: {
               email,
               password: await Hashing.hash(password),
-              roles: {
-                connect: { name: role },
-              },
+              roles: { connect: { name: role } },
             },
           },
         },

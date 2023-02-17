@@ -9,6 +9,10 @@ export class CreateRentDto {
   bookId: string;
 
   @Expose()
+  @IsObjectId()
+  customerId: string;
+
+  @Expose()
   @IsInt()
   rentPeriodInDays: number;
 }

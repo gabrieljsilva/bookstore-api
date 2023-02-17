@@ -3,8 +3,8 @@ import { SeederRunner } from './utils';
 import {
   _001_Roles,
   _002_Permissions,
-  _003_CustomerPermissions,
-  _004_User,
+  _003_User,
+  _004_Customer_permissions,
 } from './seeds';
 
 const prisma = new PrismaClient();
@@ -14,8 +14,8 @@ async function main() {
   await seederRunner.run(
     _001_Roles,
     _002_Permissions,
-    _003_CustomerPermissions,
-    _004_User,
+    _003_User,
+    _004_Customer_permissions,
   );
 }
 

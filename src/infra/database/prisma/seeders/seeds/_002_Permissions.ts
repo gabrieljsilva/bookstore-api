@@ -30,7 +30,11 @@ export class _002_Permissions extends Seeder<PermissionSeeder> {
         'READ_BOOK',
         'UPDATE_BOOK',
         'DELETE_BOOK',
+
         'READ_RENTS',
+        'READ_RENT',
+        'CREATE_RENT',
+        'UPDATE_RENT',
       ],
     };
   }

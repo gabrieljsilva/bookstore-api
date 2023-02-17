@@ -1,49 +1,72 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@prisma/module';
-import { CreateRentDto, ListRentsDto, ReturnBookDto } from './dto';
-import { Prisma, User } from '@prisma/client';
-import { AlreadyExistsException, NotFoundException } from '@exceptions';
 import { addDays, endOfDay } from 'date-fns';
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { PrismaService } from '@prisma/module';
+import { BookRentedOrDeleted, NotFoundException } from '@exceptions';
+import { UserModel } from '@models';
+import { Roles } from '@enums';
+import { CreateRentDto, ListRentsDto, ReturnBookDto } from './dto';
+import { BookService } from '../../../book/modules/book/book.service';
+
 import RentWhereInput = Prisma.RentWhereInput;
 
 @Injectable()
 export class RentService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly bookService: BookService,
+  ) {}
 
-  async isBookRented(bookId: string) {
-    return this.prisma.rent.findFirst({
+  async createRent(createRentDto: CreateRentDto) {
+    const { bookId, customerId, rentPeriodInDays } = createRentDto;
+
+    const customer = await this.prisma.user.findFirst({
       where: {
-        bookId: bookId,
-        returnedIn: { isSet: false },
+        id: customerId,
+        credentials: {
+          roles: { some: { name: 'CUSTOMER' } },
+        },
       },
     });
-  }
 
-  async createRent(createRentDto: CreateRentDto, user: User) {
-    const { bookId, rentPeriodInDays } = createRentDto;
-    const isBookAlreadyRented = await this.isBookRented(bookId);
+    if (!customer) {
+      throw new NotFoundException('user', { id: customerId });
+    }
 
+    const isBookAlreadyRented = await this.bookService.isBookRentedOrDeleted(
+      bookId,
+    );
     if (isBookAlreadyRented) {
-      throw new AlreadyExistsException('rent', { bookId });
+      throw new BookRentedOrDeleted(bookId);
     }
 
     return this.prisma.rent.create({
       data: {
         book: { connect: { id: bookId } },
-        user: { connect: { id: user.id } },
+        user: { connect: { id: customerId } },
         returnDate: endOfDay(addDays(new Date(), rentPeriodInDays)),
       },
       include: { book: true },
     });
   }
 
-  async listRents(listRentsDto: ListRentsDto) {
+  async listRents(listRentsDto: ListRentsDto, user: UserModel) {
     const { offset, limit, userId, bookId } = listRentsDto;
 
     const listRentsQuery: RentWhereInput = {
       userId,
       bookId,
     };
+
+    const isUserCustomer = user.credentials.roles.some(
+      (role) => role.name === Roles.CUSTOMER,
+    );
+
+    if (isUserCustomer) {
+      listRentsQuery['user'] = {
+        id: user.id,
+      };
+    }
 
     const rentsCount = await this.prisma.rent.count({ where: listRentsQuery });
     const rents = await this.prisma.rent.findMany({
@@ -67,9 +90,7 @@ export class RentService {
     const rent = await this.prisma.rent.findFirst({
       where: {
         id: rentId,
-        returnedIn: {
-          isSet: false,
-        },
+        returnedIn: { isSet: false },
       },
     });
 

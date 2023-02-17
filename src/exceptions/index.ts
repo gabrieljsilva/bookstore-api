@@ -5,3 +5,4 @@ export * from './out-of-range.exception';
 export * from './invalid-token.exception';
 export * from './invalid-entries.exception';
 export * from './credentials-not-match.exception';
+export * from './book-rented-or-deleted';
