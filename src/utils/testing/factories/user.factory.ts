@@ -1,17 +1,16 @@
 import { Factory } from 'fishery';
-import { Credentials, User } from '@prisma/client';
+import { Credentials, Role, User } from '@prisma/client';
 import { ObjectId } from 'bson';
-import { credentialsFactory } from './credentials.factory';
+import { Nullable } from '../../../domain/types';
 
-export const userFactory = Factory.define<User & { credentials: Credentials }>(
-  () => {
-    return {
-      id: ObjectId.generate().toString(),
-      name: 'Jonh Doe',
-      credentialsId: ObjectId.generate().toString(),
-      credentials: credentialsFactory.build(),
-      updatedAt: new Date(),
-      createdAt: new Date(),
-    };
-  },
-);
+export const userFactory = Factory.define<
+  User & { credentials?: Nullable<Credentials & { roles?: Nullable<Role[]> }> }
+>(() => {
+  return {
+    id: new ObjectId().toString(),
+    name: 'Jonh Doe',
+    credentialsId: new ObjectId().toString(),
+    updatedAt: new Date(),
+    createdAt: new Date(),
+  };
+});

@@ -1,11 +1,14 @@
 import { Factory } from 'fishery';
-import { Credentials } from '@prisma/client';
+import { Credentials, User } from '@prisma/client';
 import { ObjectId } from 'bson';
 import { Hashing } from '@utils';
+import { Nullable } from '../../../domain/types';
 
-export const credentialsFactory = Factory.define<Credentials>(() => {
+export const credentialsFactory = Factory.define<
+  Credentials & { user?: Nullable<User> }
+>(() => {
   return {
-    id: ObjectId.generate().toString(),
+    id: new ObjectId().toString(),
     email: 'john.doe@email.com',
     password: Hashing.hashSync('123@abc'),
     rolesIds: [],
