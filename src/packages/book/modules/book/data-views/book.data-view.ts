@@ -1,10 +1,11 @@
 import { User, Book, Credentials } from '@prisma/client';
 import { UserDataView } from '../../../../user/modules/user/data-views';
 import { ApiProperty } from '@nestjs/swagger';
+import { Nullable } from '../../../../../domain/types';
 
 type BookDatabaseModel = Book & {
-  deletedByUser?: User & { credentials: Credentials };
-  registeredByUser?: User & { credentials: Credentials };
+  deletedByUser?: Nullable<User & { credentials: Credentials }>;
+  registeredByUser?: Nullable<User & { credentials: Credentials }>;
 };
 
 export class BookDataView {
@@ -24,13 +25,13 @@ export class BookDataView {
   publishedAt: Date;
 
   @ApiProperty()
-  deletedAt?: Date;
+  deletedAt?: Nullable<Date>;
 
   @ApiProperty({ nullable: true })
-  registeredByUser?: UserDataView;
+  registeredByUser?: Nullable<UserDataView>;
 
   @ApiProperty({ nullable: true })
-  deletedByUser?: UserDataView;
+  deletedByUser?: Nullable<UserDataView>;
 
   constructor(bookDataView: BookDataView) {
     this.id = bookDataView.id;
@@ -45,6 +46,7 @@ export class BookDataView {
 
   static fromDatabaseModel(book: BookDatabaseModel) {
     const { registeredByUser, deletedByUser } = book;
+
     return new BookDataView({
       id: book.id,
       title: book.title,
@@ -54,6 +56,7 @@ export class BookDataView {
       deletedAt: book.deletedAt ?? undefined,
       registeredByUser:
         registeredByUser && UserDataView.fromDatabaseModel(registeredByUser),
+
       deletedByUser:
         deletedByUser && UserDataView.fromDatabaseModel(deletedByUser),
     });

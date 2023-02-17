@@ -11,14 +11,16 @@ export class _002_Permissions extends Seeder<PermissionSeeder> {
       where: { name: this.data.roleName },
     });
 
-    await this.prisma.permission.createMany({
-      data: this.data.permissions.map((permission) => {
-        return {
-          name: permission,
-          roleId: role.id,
-        };
-      }),
-    });
+    if (role) {
+      await this.prisma.permission.createMany({
+        data: this.data.permissions.map((permission) => {
+          return {
+            name: permission,
+            roleId: role.id,
+          };
+        }),
+      });
+    }
   }
 
   get data(): PermissionSeeder {

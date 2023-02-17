@@ -1,8 +1,9 @@
 import { User, Credentials, Role } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
+import { Nullable } from '../../../../../domain/types';
 
 type UserDatabaseModel = User & {
-  credentials: Credentials & { roles?: Role[] };
+  credentials: Credentials & { roles?: Nullable<Role[]> };
 };
 
 export class UserDataView {
@@ -27,13 +28,15 @@ export class UserDataView {
 
   static fromDatabaseModel(user: UserDatabaseModel): UserDataView {
     const { id, name, credentials } = user;
-    const { email, roles } = credentials;
+    const { email } = credentials;
+
+    const roles = credentials.roles?.map((role) => role.name);
 
     return new UserDataView({
       id,
       name,
       email,
-      roles: roles && roles.map((role) => role.name),
+      roles: roles,
     });
   }
 }
