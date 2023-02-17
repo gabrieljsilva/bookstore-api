@@ -11,10 +11,9 @@ import {
 import { BookService } from './book.service';
 import { CreateBookDto, BookIdDto, GetBookByIdDto, UpdateBookDto } from './dto';
 import { BookDataView } from './data-views';
-import { CurrentAccessCredentials, RequirePermissions } from '@decorators';
+import { CurrentUser, RequirePermissions } from '@decorators';
 import { ListBooksDto } from './dto/list-books.dto';
-import { PaginatedData } from '@models';
-import { CredentialsModel } from '@models';
+import { PaginatedData, UserModel } from '@models';
 
 @Controller('books')
 export class BookController {
@@ -41,12 +40,9 @@ export class BookController {
   @RequirePermissions('CREATE_BOOK')
   async createBook(
     @Body() createBookDto: CreateBookDto,
-    @CurrentAccessCredentials() credentials: CredentialsModel,
+    @CurrentUser() user: UserModel,
   ) {
-    const book = await this.bookService.createBook(
-      createBookDto,
-      credentials.user,
-    );
+    const book = await this.bookService.createBook(createBookDto, user);
     return BookDataView.fromDatabaseModel(book);
   }
 
@@ -54,9 +50,9 @@ export class BookController {
   @RequirePermissions('DELETE_BOOK')
   async deleteBook(
     @Param() bookIdDto: BookIdDto,
-    @CurrentAccessCredentials() credentials: CredentialsModel,
+    @CurrentUser() user: UserModel,
   ) {
-    const book = await this.bookService.deleteBook(bookIdDto, credentials.user);
+    const book = await this.bookService.deleteBook(bookIdDto, user);
     return BookDataView.fromDatabaseModel(book);
   }
 

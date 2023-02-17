@@ -1,5 +1,7 @@
 import { User, Credentials } from '@prisma/client';
 
+type UserDatabaseModel = User & { credentials: Credentials };
+
 export class UserDataView {
   id: string;
   name: string;
@@ -11,9 +13,7 @@ export class UserDataView {
     this.email = user.email;
   }
 
-  static fromDatabaseModel(
-    user: User & { credentials: Credentials },
-  ): UserDataView {
+  static fromDatabaseModel(user: UserDatabaseModel): UserDataView {
     const { id, name, credentials } = user;
     const { email } = credentials;
     return new UserDataView({ id, name, email });

@@ -1,6 +1,11 @@
 import { User, Book, Credentials } from '@prisma/client';
 import { UserDataView } from '../../../../user/modules/user/data-views';
 
+type BookDatabaseModel = Book & {
+  deletedByUser?: User & { credentials: Credentials };
+  registeredByUser?: User & { credentials: Credentials };
+};
+
 export class BookDataView {
   id: string;
   title: string;
@@ -22,12 +27,7 @@ export class BookDataView {
     this.deletedByUser = bookDataView.deletedByUser;
   }
 
-  static fromDatabaseModel(
-    book: Book & {
-      deletedByUser?: User & { credentials: Credentials };
-      registeredByUser?: User & { credentials: Credentials };
-    },
-  ) {
+  static fromDatabaseModel(book: BookDatabaseModel) {
     return new BookDataView({
       id: book.id,
       title: book.title,

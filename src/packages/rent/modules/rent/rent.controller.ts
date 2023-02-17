@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { CredentialsModel, PaginatedData } from '@models';
-import { CurrentAccessCredentials, RequirePermissions } from '@decorators';
+import { PaginatedData, UserModel } from '@models';
+import { CurrentUser, RequirePermissions } from '@decorators';
 import { RentService } from './rent.service';
 import { CreateRentDto, ListRentsDto, ReturnBookDto } from './dto';
 import { RentDataView } from './data-views';
@@ -13,12 +13,9 @@ export class RentController {
   @RequirePermissions('RENT_BOOK')
   async createRent(
     @Body() createRentDto: CreateRentDto,
-    @CurrentAccessCredentials() credentials: CredentialsModel,
+    @CurrentUser() user: UserModel,
   ) {
-    const rent = await this.rentService.createRent(
-      createRentDto,
-      credentials.user,
-    );
+    const rent = await this.rentService.createRent(createRentDto, user);
     return RentDataView.fromDatabaseModel(rent);
   }
 

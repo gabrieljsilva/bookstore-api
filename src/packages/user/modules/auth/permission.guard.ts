@@ -1,7 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { REQUIRED_PERMISSIONS_METADATA_KEY } from '@constants';
-import { CredentialsModel } from '../../../../domain/models/prisma';
+import { UserModel } from '@models';
 import { deepFlat } from '@utils';
 
 @Injectable()
@@ -19,10 +19,10 @@ export class PermissionGuard implements CanActivate {
     }
 
     const ctx = context.switchToHttp().getRequest();
-    const credentials = ctx.user as CredentialsModel;
+    const user = ctx.user as UserModel;
 
     const permissions = deepFlat(
-      credentials.roles.map((role) =>
+      user.credentials.roles.map((role) =>
         role.permissions.map((permission) => permission.name),
       ),
     );
