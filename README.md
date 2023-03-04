@@ -18,7 +18,7 @@ $ #or
 $ npm run init:env
 ```
 This script will run the API instance and the MongoDB instances that must run in cluster mode (this is a Prisma ORM requirement).
-If you don't want to run the application on MongoDB, you can create an [Atlas](https://www.mongodb.com/atlas/database) cluster for free and remove MongoDB from `docker-compose.yml` file.
+If you don't want to run the cluster on docker-compose, you can create an [Atlas](https://www.mongodb.com/atlas/database) cluster for free and remove MongoDB from `docker-compose.yml` file.
 
 ### Without Docker
 Clone the file `.env.example` and rename it to `.env`.
